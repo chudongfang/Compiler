@@ -20,6 +20,8 @@ using namespace std;
 class Compiler
 {
 public:
+    
+    //构造函数
     Compiler(const string FileName, const string OutName)
       :
         FileName_(FileName),
@@ -43,18 +45,24 @@ public:
     void setOutName(string OutName)
     { OutName_ = OutName; }
 private:
+    //预处理后的内容
     string contx_;
+    
+    //文件内容
     string filecontx_;
+    
+    //输入输出文件名
     string FileName_;
     string OutName_; 
+    
     set<string> identifierTb; // 标识符表
     vector<string> identifier; // 标识符
     vector<string> reserveWord;// 保留字
     vector<string> constant; //常数
     vector<string> operatorOrDelimiter;//运算符号
-    
-    static string operatorOrDelimiterList[36];
-    static  string reserveWordList[32] ;
+ 
+    static string operatorOrDelimiterList[36]; // 操作符表
+    static  string reserveWordList[32] ;       //保留字表
 };
 
 string Compiler::operatorOrDelimiterList[36] = {
@@ -73,6 +81,10 @@ string Compiler::reserveWordList[32] = {
       "volatile", "while"
 };
 
+
+
+
+//回写文件函数
 bool Compiler::WriteBack()
 {
     ofstream out(OutName_.c_str());
@@ -95,6 +107,8 @@ bool Compiler::WriteBack()
 
 
 
+
+//读源文件
 bool Compiler::readFile()
 {
     fstream in(FileName_.c_str());
@@ -118,21 +132,14 @@ bool Compiler::readFile()
 
 
 
-
-
-
-
-
-
-
-
-
-
+//判断是否为字母
 bool Compiler::IsLetter(char ch)
 {
     return (ch >= 'a' && ch <= 'z' || ch >= 'A' && ch <= 'Z' || ch == '_');
 }
 
+
+//判断是否为数字
 bool Compiler::IsDigit(char ch)
 {
     return (ch >= '0' && ch <= '9');
@@ -141,7 +148,7 @@ bool Compiler::IsDigit(char ch)
 
 
 
-
+//编译预处理
 void Compiler::preProcessing()
 {
     string s = this->filecontx_;
@@ -179,7 +186,7 @@ void Compiler::preProcessing()
         }
 
         
-        // dell with \n \r \t \v
+        // Delete \n \r \t \v
         if(s[i] != '\n' && s[i] != '\t' && s[i] != '\v' && s[i] != '\r')
         {
             ans += s[i];
@@ -194,7 +201,7 @@ void Compiler::preProcessing()
 
 
 
-
+//查找保留字
 int Compiler::findReserve(const string str)
 {
     for(int i=0; i < 32; i++)
@@ -245,6 +252,7 @@ void Compiler::Scanner(int &syn , string &str , int &beginPoint)
         }
         return ;
     }
+    //数字
     else if (IsDigit( first ))
     {
         while(IsDigit(contx_[beginPoint]))
@@ -254,6 +262,7 @@ void Compiler::Scanner(int &syn , string &str , int &beginPoint)
         syn = 99;
 
     }
+    //符号
     else if( first == '+' || first == '-' || first == '*' || first == '/' || 
              first == ';' || first == '(' || first == ')' || first == '^' ||
              first == ',' || first == '\"' || first == '\'' || first == '~' ||
@@ -278,7 +287,6 @@ void Compiler::Scanner(int &syn , string &str , int &beginPoint)
         return ;
 
     }
-    //FIXME  
     else  if (first == '<')
     {//<,<=,<<
         beginPoint++;//后移，超前搜索
@@ -406,7 +414,7 @@ void Compiler::Scanner(int &syn , string &str , int &beginPoint)
 }
 
 
-
+//词法分析函数
 bool Compiler::Hander()
 {
     int syn = -1;
