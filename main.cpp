@@ -93,8 +93,43 @@ bool Compiler::WriteBack()
         cout << "EROOR : can't not open"<<endl;
         return false;
     }
+   
+    
+    out <<"------------------------------------"<<endl;
+
+    out << "identifier: "<<identifier.size()<<endl;
+    for(int i = 0;i < identifier.size();i++)
+    {
+        out << identifier[i]<<endl;
+    }
+    
+    out <<"------------------------------------"<<endl;
+    out << "reserveWord: "<<reserveWord.size()<<endl;
+    for(int i = 0;i < reserveWord.size();i++)
+    {
+        out << reserveWord[i]<<endl;
+    }
+
+
+    out <<"------------------------------------"<<endl;
+    out << "constant: "<<constant.size()<<endl;
+    for(int i = 0;i < constant.size();i++)
+    {
+        out << constant[i]<<endl;
+    }
+
+    
+    out <<"------------------------------------"<<endl;
+    out << "operatorOrDelimiter: "<<operatorOrDelimiter.size()<<endl;
+    for(int i = 0;i < operatorOrDelimiter.size();i++)
+    {
+        out << operatorOrDelimiter[i]<<endl;
+    }
     
     
+    
+    
+    out <<"------------------------------------"<<endl;
     out << identifierTb.size()<<endl;
 
     for(set<string>::iterator it = identifierTb.begin(); it != identifierTb.end(); it++)
