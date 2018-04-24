@@ -55,10 +55,12 @@ private:
     string FileName_;
     string OutName_; 
     
-    set<string> identifierTb; // 标识符表
-    vector<string> identifier; // 标识符
+    map<string,int> identifierTb; // 标识符表
+    map<string,int> constantTb; 
+    
+    vector<int> identifier; // 标识符
     vector<string> reserveWord;// 保留字
-    vector<string> constant; //常数
+    vector<int> constant; //常数
     vector<string> operatorOrDelimiter;//运算符号
  
     static string operatorOrDelimiterList[36]; // 操作符表
@@ -96,13 +98,44 @@ bool Compiler::WriteBack()
    
     
     out <<"------------------------------------"<<endl;
+    out <<"identifierTb: "<< identifierTb.size()<<endl;
+
+    for(map<string,int>::iterator it = identifierTb.begin(); it != identifierTb.end(); it++)
+    {
+       out << "("<<it->first <<","<< it->second<<")" <<endl; 
+    }
+
+    
+    out <<"------------------------------------"<<endl;
 
     out << "identifier: "<<identifier.size()<<endl;
     for(int i = 0;i < identifier.size();i++)
     {
-        out << identifier[i]<<endl;
+        out <<"("<<"identifier,"<< identifier[i]<<")"<<endl;
     }
+  
+
+
     
+    out <<"------------------------------------"<<endl;
+    out <<"constantTb: "<<  constantTb.size()<<endl;
+
+    for(map<string,int>::iterator it = constantTb.begin(); it != constantTb.end(); it++)
+    {
+       out << "("<<it->first <<","<< it->second<<")" <<endl; 
+    }
+ 
+    out <<"------------------------------------"<<endl;
+    out << "constant: "<<constant.size()<<endl;
+    for(int i = 0;i < constant.size();i++)
+    {
+        out <<"("<<"constant,"<< constant[i]<<")"<<endl;
+    }
+
+
+
+
+
     out <<"------------------------------------"<<endl;
     out << "reserveWord: "<<reserveWord.size()<<endl;
     for(int i = 0;i < reserveWord.size();i++)
@@ -111,13 +144,7 @@ bool Compiler::WriteBack()
     }
 
 
-    out <<"------------------------------------"<<endl;
-    out << "constant: "<<constant.size()<<endl;
-    for(int i = 0;i < constant.size();i++)
-    {
-        out << constant[i]<<endl;
-    }
-
+   
     
     out <<"------------------------------------"<<endl;
     out << "operatorOrDelimiter: "<<operatorOrDelimiter.size()<<endl;
@@ -129,14 +156,7 @@ bool Compiler::WriteBack()
     
     
     
-    out <<"------------------------------------"<<endl;
-    out << identifierTb.size()<<endl;
-
-    for(set<string>::iterator it = identifierTb.begin(); it != identifierTb.end(); it++)
-    {
-       out << *it<<endl; 
-    }
-
+   
     return true; 
 }
 
@@ -460,8 +480,12 @@ bool Compiler::Hander()
         Scanner(syn, str,beginPoint);
         if(syn == 100)
         {
-            identifierTb.insert(str);
-            identifier.push_back(str);
+            if(!identifierTb[str])
+            {
+                int num = identifierTb.size()+1;
+                identifierTb[str] = num;
+            }
+            identifier.push_back(identifierTb[str]);
         }
         else if(syn>=1&&syn<=32)
         {
@@ -469,7 +493,33 @@ bool Compiler::Hander()
         }
         else if(syn == 99)
         {
-            constant.push_back(str);
+            
+            
+            int tmp =0;
+            for(int i=str.size()-1;i>=0;i--)
+            {
+                tmp *= 10;
+                tmp += str[i]-'0';
+            }
+            //FIXME
+            
+            
+            if(tmp < 0)continue;
+            str = "";
+            while(tmp)
+            {
+                str = char(tmp%2 + '0') + str;
+                tmp >>= 1;
+            }
+            
+            if(str=="")
+                str = "0";
+            if(!constantTb[str])
+            {
+                int num = constantTb.size()+1;
+                constantTb[str] = num;
+            }
+            constant.push_back(constantTb[str]);
         }
         else if(syn >= 33 && syn <= 68)
         {
@@ -477,18 +527,19 @@ bool Compiler::Hander()
         }
         
         //debug
-        cout <<"-->"<< str<<endl;
+        //cout <<"-->"<< str<<endl;
         
     }
 
-
+    /*
     //debug
     cout << identifierTb.size()<<endl;
 
-    for(set<string>::iterator it = identifierTb.begin(); it != identifierTb.end(); it++)
+    for(map<string,int>::iterator it = identifierTb.begin(); it != identifierTb.end(); it++)
     {
        cout << *it<<endl; 
     }
+    */
 
 }
 
