@@ -56,7 +56,9 @@ private:
     string OutName_; 
     
     map<string,int> identifierTb; // 标识符表
+    map<int,string> identifierTb1;
     map<string,int> constantTb; 
+    map<int,string> constantTb1;
     
     vector<int> identifier; // 标识符
     vector<string> reserveWord;// 保留字
@@ -97,39 +99,50 @@ bool Compiler::WriteBack()
     }
    
     
-    out <<"------------------------------------"<<endl;
-    out <<"identifierTb: "<< identifierTb.size()<<endl;
-
     for(map<string,int>::iterator it = identifierTb.begin(); it != identifierTb.end(); it++)
+    {
+        identifierTb1[it->second] = it->first;
+    }
+
+    out <<"------------------------------------"<<endl;
+    out <<"identifierTb: "<< identifierTb1.size()<<endl;
+
+    for(map<int,string>::iterator it = identifierTb1.begin(); it != identifierTb1.end(); it++)
     {
        out << "("<<it->first <<","<< it->second<<")" <<endl; 
     }
 
-    
+   
+  
     out <<"------------------------------------"<<endl;
 
     out << "identifier: "<<identifier.size()<<endl;
     for(int i = 0;i < identifier.size();i++)
     {
-        out <<"("<<"identifier,"<< identifier[i]<<")"<<endl;
+        out <<"("<< identifier[i]<<","<< identifierTb1[identifier[i]] <<")"<<endl;
     }
   
 
+    for(map<string,int>::iterator it = constantTb.begin(); it != constantTb.end(); it++)
+    {
+        constantTb1[it->second] = it->first;
+    }
 
     
     out <<"------------------------------------"<<endl;
-    out <<"constantTb: "<<  constantTb.size()<<endl;
+    out <<"constantTb: "<<  constantTb1.size()<<endl;
 
-    for(map<string,int>::iterator it = constantTb.begin(); it != constantTb.end(); it++)
+    for(map<int,string>::iterator it = constantTb1.begin(); it != constantTb1.end(); it++)
     {
        out << "("<<it->first <<","<< it->second<<")" <<endl; 
     }
- 
+
+
     out <<"------------------------------------"<<endl;
     out << "constant: "<<constant.size()<<endl;
     for(int i = 0;i < constant.size();i++)
     {
-        out <<"("<<"constant,"<< constant[i]<<")"<<endl;
+        out <<"("<< constant[i]<<","<< constantTb1[constant[i]] <<")"<<endl;
     }
 
 
@@ -152,10 +165,6 @@ bool Compiler::WriteBack()
     {
         out << operatorOrDelimiter[i]<<endl;
     }
-    
-    
-    
-    
    
     return true; 
 }
@@ -247,6 +256,8 @@ void Compiler::preProcessing()
             ans += s[i];
         }
     }
+
+    //contx_.find();
 
     this->contx_ = ans;
     //debug
@@ -482,7 +493,7 @@ bool Compiler::Hander()
         {
             if(!identifierTb[str])
             {
-                int num = identifierTb.size()+1;
+                int num = identifierTb.size();
                 identifierTb[str] = num;
             }
             identifier.push_back(identifierTb[str]);
@@ -516,7 +527,7 @@ bool Compiler::Hander()
                 str = "0";
             if(!constantTb[str])
             {
-                int num = constantTb.size()+1;
+                int num = constantTb.size();
                 constantTb[str] = num;
             }
             constant.push_back(constantTb[str]);
